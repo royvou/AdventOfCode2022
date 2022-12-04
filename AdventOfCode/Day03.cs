@@ -9,15 +9,17 @@ public class Day03 : BaseDay
         _input = File.ReadAllText(InputFilePath);
     }
 
-    public override ValueTask<string> Solve_1() => new(_input.SplitNewLine().Select((x =>
+    public override ValueTask<string> Solve_1() => new(_input.SplitNewLine().Select(ParseBag).Select(GetChar).Select(GetScore).Sum().ToString());
+
+    private static Bag ParseBag(string input)
     {
-        var input = x.ToCharArray();
-        return new Bag(input[0..(input.Length / 2)], input[(input.Length / 2)..]);
-    })).Select(GetChar).Select(GetScore).Sum().ToString());
+        var inputCharArray = input.ToCharArray();
+        return new Bag(inputCharArray[0..(inputCharArray.Length / 2)], inputCharArray[(inputCharArray.Length / 2)..]);
+    }
 
     private double GetScore(char arg)
         => char.IsUpper(arg)
-            ? arg - 64  + 26
+            ? arg - 64 + 26
             : arg - 96;
 
     private char GetChar(Bag bag)
@@ -27,7 +29,17 @@ public class Day03 : BaseDay
         return compartment1.First();
     }
 
-    public override ValueTask<string> Solve_2() => new("");
+    public override ValueTask<string> Solve_2() => new(_input.SplitNewLine().Chunk(3).Select(x =>
+    {
+        var line1 = x[0];
+        var hashSet = new HashSet<char>(line1.ToCharArray());
+        for (int i = 1; i < x.Length; i++)
+        {
+            hashSet.IntersectWith(x[i].ToCharArray());
+        }
+
+        return hashSet.First();
+    }).Select(GetScore).Sum().ToString());
 }
 
 public record Bag(char[] Compartment1, char[] Compartment2);
