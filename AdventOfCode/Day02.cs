@@ -2,6 +2,14 @@
 
 public class Day02 : BaseDay
 {
+    private static readonly IDictionary<Action, Action> Player2_LoseDictionary = new Dictionary<Action, Action>
+    {
+        [Action.Rock] = Action.Scissor,
+        [Action.Scissor] = Action.Paper,
+        [Action.Paper] = Action.Rock,
+    };
+
+    private static readonly IDictionary<Action, Action> Player2_WinDictionary = Player2_LoseDictionary.ToDictionary(x => x.Value, y => y.Key);
     private readonly string _input;
 
     public Day02()
@@ -26,7 +34,7 @@ public class Day02 : BaseDay
         return new Game(player1, player2);
     }).GroupBy(x => x).Select(games => CalculateGameScore(games.Key) * games.Count()).Sum().ToString());
 
-    private int CalculateGameScore(Game x)
+    private static int CalculateGameScore(Game x)
         => x switch
         {
             _ when x.Player1 == x.Player2 => (int)x.Player2 + 3,
@@ -34,16 +42,7 @@ public class Day02 : BaseDay
             _ => (int)x.Player2 + 6,
         };
 
-    private static readonly IDictionary<Action, Action> Player2_LoseDictionary = new Dictionary<Action, Action>()
-    {
-        [Action.Rock] = Action.Scissor,
-        [Action.Scissor] = Action.Paper,
-        [Action.Paper] = Action.Rock,
-    };
-
-    private static readonly IDictionary<Action, Action> Player2_WinDictionary = Player2_LoseDictionary.ToDictionary(x => x.Value, y => y.Key);
-
-    private Action GetPlayer2Action(Action player1, GameType gameType)
+    private static Action GetPlayer2Action(Action player1, GameType gameType)
         => gameType switch
         {
             GameType.Draw => player1,
@@ -52,7 +51,7 @@ public class Day02 : BaseDay
         };
 
 
-    private Action StringToAction(string character) => character switch
+    private static Action StringToAction(string character) => character switch
     {
         "A" => Action.Rock,
         "B" => Action.Paper,
@@ -63,7 +62,7 @@ public class Day02 : BaseDay
         "Z" => Action.Scissor,
     };
 
-    private GameType StringToGameType(string character) => character switch
+    private static GameType StringToGameType(string character) => character switch
     {
         "X" => GameType.Lose,
         "Y" => GameType.Draw,
