@@ -14,15 +14,15 @@ public class Day03 : BaseDay
     private static Bag ParseBag(string input)
     {
         var inputCharArray = input.ToCharArray();
-        return new Bag(inputCharArray[0..(inputCharArray.Length / 2)], inputCharArray[(inputCharArray.Length / 2)..]);
+        return new Bag(inputCharArray[..(inputCharArray.Length / 2)], inputCharArray[(inputCharArray.Length / 2)..]);
     }
 
-    private double GetScore(char arg)
+    private static double GetScore(char arg)
         => char.IsUpper(arg)
             ? arg - 64 + 26
             : arg - 96;
 
-    private char GetChar(Bag bag)
+    private static char GetChar(Bag bag)
     {
         var compartment1 = new HashSet<char>(bag.Compartment1);
         compartment1.IntersectWith(bag.Compartment2);
@@ -33,7 +33,7 @@ public class Day03 : BaseDay
     {
         var line1 = x[0];
         var hashSet = new HashSet<char>(line1.ToCharArray());
-        for (int i = 1; i < x.Length; i++)
+        for (var i = 1; i < x.Length; i++)
         {
             hashSet.IntersectWith(x[i].ToCharArray());
         }
