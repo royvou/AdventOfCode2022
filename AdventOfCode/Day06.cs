@@ -2,13 +2,21 @@
 
 public class Day06 : Day
 {
-    public override ValueTask<string> Solve_1()
+    private readonly char[] _inputArray;
+
+    public Day06()
     {
-        var inputArray = _input.ToArray();
-        var result = Enumerable.Range(0, inputArray.Length - 3).First(x => inputArray[x..(x + 4)].GroupBy(x => x).Count() == 4) + 4;
-        return new(result.ToString());
+        _inputArray = _input.ToArray();
+    }
+
+    public override ValueTask<string> Solve_1()
+        => new(GetMarkerEndIndex(_inputArray, 4).ToString());
+
+    private static int GetMarkerEndIndex(char[] inputArray, int length)
+    {
+        return Enumerable.Range(0, inputArray.Length - length).First(x => inputArray[x..(x + length)].GroupBy(x => x).Count() == length) + length;
     }
 
     public override ValueTask<string> Solve_2()
-        => throw new NotImplementedException();
+        => new(GetMarkerEndIndex(_inputArray, 14).ToString());
 }
