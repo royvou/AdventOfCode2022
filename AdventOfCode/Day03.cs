@@ -1,14 +1,7 @@
 ﻿namespace AdventOfCode;
 
-public class Day03 : BaseDay
+public class Day03 : Day
 {
-    private readonly string _input;
-
-    public Day03()
-    {
-        _input = File.ReadAllText(InputFilePath);
-    }
-
     public override ValueTask<string> Solve_1() => new(_input.SplitNewLine().Select(ParseBag).Select(GetChar).Select(GetScore).Sum().ToString());
 
     private static Bag ParseBag(string input)

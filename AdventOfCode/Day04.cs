@@ -1,14 +1,7 @@
 ﻿namespace AdventOfCode;
 
-public class Day04 : BaseDay
+public class Day04 : Day
 {
-    private readonly string _input;
-
-    public Day04()
-    {
-        _input = File.ReadAllText(InputFilePath);
-    }
-
     public override ValueTask<string> Solve_1()
         => new(_input.SplitNewLine().Select(x => x.Split(',').Select(c =>
         {

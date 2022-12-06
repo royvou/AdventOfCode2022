@@ -1,24 +1,15 @@
-﻿using System.Collections;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks.Sources;
 
 namespace AdventOfCode;
 
-public class Day05 : BaseDay
+public class Day05 : Day
 {
-    private readonly string _input;
-
-    public Day05()
-    {
-        _input = File.ReadAllText(InputFilePath);
-    }
-
     public override ValueTask<string> Solve_1()
     {
         var board = ParseInput(_input);
         PlayBoardPart1(board);
-        return new(GetCode(board));
+        return new ValueTask<string>(GetCode(board));
     }
 
     private string GetCode(Board board)
@@ -68,12 +59,12 @@ public class Day05 : BaseDay
 
         // Parse stacks
         var stacks = Enumerable.Range(0, stackAmount).Select(x => new Stack(new Stack<Cargo>())).ToArray();
-        for (int i = 0; i < stacks.Length; i += 1)
+        for (var i = 0; i < stacks.Length; i += 1)
         {
             var currentStack = stacks[i];
-            for (int j = indexOfLines - 2; j >= 0; j--)
+            for (var j = indexOfLines - 2; j >= 0; j--)
             {
-                var toEnqueue = lines[j][1 + (i * 4)];
+                var toEnqueue = lines[j][1 + i * 4];
                 if (toEnqueue != ' ')
                 {
                     currentStack.Queue.Push(new Cargo(toEnqueue));
@@ -91,7 +82,7 @@ public class Day05 : BaseDay
     {
         var board = ParseInput(_input);
         PlayBoardPart2(board);
-        return new(GetCode(board));
+        return new ValueTask<string>(GetCode(board));
     }
 }
 
@@ -108,4 +99,4 @@ public record Instruction(long Count, long From, long To)
         var match = Regex.Match(input, @"move ([\d]+) from ([\d]+) to ([\d]+)");
         return new Instruction(match.Groups[1].Value.AsLong(), match.Groups[2].Value.AsLong(), match.Groups[3].Value.AsLong());
     }
-};
+}

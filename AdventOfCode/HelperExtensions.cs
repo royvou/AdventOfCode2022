@@ -14,5 +14,4 @@ public static class HelperExtensions
 
     public static long AsLong(this string input) => long.Parse(input);
     public static int AsInt(this string input) => int.Parse(input);
-
 }

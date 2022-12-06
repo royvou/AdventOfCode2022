@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode;
 
-public class Day02 : BaseDay
+public class Day02 : Day
 {
     private static readonly IDictionary<Action, Action> Player2_LoseDictionary = new Dictionary<Action, Action>
     {
@@ -10,12 +10,7 @@ public class Day02 : BaseDay
     };
 
     private static readonly IDictionary<Action, Action> Player2_WinDictionary = Player2_LoseDictionary.ToDictionary(x => x.Value, y => y.Key);
-    private readonly string _input;
 
-    public Day02()
-    {
-        _input = File.ReadAllText(InputFilePath);
-    }
 
     public override ValueTask<string> Solve_1() => new(_input.SplitNewLine().Select(x =>
     {
