@@ -6,26 +6,28 @@ public class Day07 : Day
     public override ValueTask<string> Solve_1()
     {
         var disk = Parse(new DiskItem(Type.Directory, new Dictionary<string, DiskItem>(), null, "/"), _input.SplitNewLine());
-
-        var b = EnumerateDisk(disk).Select(x => x.Name).ToList();
-        return new(EnumerateDisk(disk).Where(x => x.Type == Type.Directory).Where(disk => disk.CalculatedSize < 100000).Sum(x => x.CalculatedSize).ToString());
+        return new(EnumerateDictoy(disk).Where(disk => disk.CalculatedSize < 100000).Sum(x => x.CalculatedSize).ToString());
     }
 
+    private IEnumerable<DiskItem> EnumerateDictoy(DiskItem disk) => EnumerateDisk(disk).Where(x => x.Type == Type.Directory);
+    
     private IEnumerable<DiskItem> EnumerateDisk(DiskItem disk)
     {
         yield return disk;
 
-        if (disk.Type == Type.Directory)
+        if (disk.Type != Type.Directory)
         {
-            foreach (var subItem in disk.SubItem.Values)
+            yield break;
+        }
+
+        foreach (var subItem in disk.SubItem.Values)
+        {
+            foreach (var subItem2 in EnumerateDisk(subItem))
             {
-                foreach (var subItem2 in EnumerateDisk(subItem))
-                {
-                    yield return subItem2;
-                }
+                yield return subItem2;
             }
         }
-      
+
 
     }
 
@@ -90,7 +92,12 @@ public class Day07 : Day
     }
 
     public override ValueTask<string> Solve_2()
-        => throw new NotImplementedException();
+    {
+        var disk = Parse(new DiskItem(Type.Directory, new Dictionary<string, DiskItem>(), null, "/"), _input.SplitNewLine());
+        var neededSpace = 30_000_000 - (70_000_000 - disk.CalculatedSize);
+        return new(EnumerateDictoy(disk).OrderBy(x => x.CalculatedSize).First(disk => disk.CalculatedSize > neededSpace).CalculatedSize.ToString());
+
+    }
 }
 
 public enum Type
