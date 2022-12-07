@@ -7,10 +7,10 @@ var problems = Assembly.GetEntryAssembly().GetTypes().Where(type => typeof(BaseP
 
 if (Environment.GetEnvironmentVariable("DOTNET_WATCH") != default)
 {
-    Solver.Solve(config =>
+    Solver.Solve(opt =>
     {
-        config.ShowConstructorElapsedTime = true;
-        config.ShowTotalElapsedTimePerDay = true;
+        opt.ShowConstructorElapsedTime = true;
+        opt.ShowTotalElapsedTimePerDay = true;
     }, problems.Last());
 }
 else
@@ -18,7 +18,12 @@ else
     switch (args.Length)
     {
         case 0:
-            await Solver.Solve(opt => opt.ClearConsole = false, problems.Last());
+            await Solver.Solve(opt =>
+            {
+                opt.ShowConstructorElapsedTime = true;
+                opt.ShowTotalElapsedTimePerDay = true;
+                opt.ClearConsole = false;
+            }, problems.Last());
             break;
         case 1 when args[0].Contains("all", StringComparison.CurrentCultureIgnoreCase):
             await Solver.Solve(opt =>

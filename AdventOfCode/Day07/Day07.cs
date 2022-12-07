@@ -2,15 +2,22 @@
 
 public class Day07 : Day
 {
+    private readonly DiskItem _rootDisk;
+    private readonly IEnumerable<DiskItem> _allDirectories;
+
+    public Day07()
+    {
+        _rootDisk = Parse(new DiskItem(Type.Directory, new Dictionary<string, DiskItem>(), null, "/"), _input.SplitNewLine());
+        _allDirectories = EnumerateDictoy(_rootDisk).ToArray();
+    }
     
     public override ValueTask<string> Solve_1()
     {
-        var disk = Parse(new DiskItem(Type.Directory, new Dictionary<string, DiskItem>(), null, "/"), _input.SplitNewLine());
-        return new(EnumerateDictoy(disk).Where(disk => disk.CalculatedSize < 100000).Sum(x => x.CalculatedSize).ToString());
+        return new(_allDirectories.Where(disk => disk.CalculatedSize < 100000).Sum(x => x.CalculatedSize).ToString());
     }
 
     private IEnumerable<DiskItem> EnumerateDictoy(DiskItem disk) => EnumerateDisk(disk).Where(x => x.Type == Type.Directory);
-    
+
     private IEnumerable<DiskItem> EnumerateDisk(DiskItem disk)
     {
         yield return disk;
@@ -27,8 +34,6 @@ public class Day07 : Day
                 yield return subItem2;
             }
         }
-
-
     }
 
     private DiskItem Parse(DiskItem diskItem, string[] splitNewLine)
@@ -93,10 +98,8 @@ public class Day07 : Day
 
     public override ValueTask<string> Solve_2()
     {
-        var disk = Parse(new DiskItem(Type.Directory, new Dictionary<string, DiskItem>(), null, "/"), _input.SplitNewLine());
-        var neededSpace = 30_000_000 - (70_000_000 - disk.CalculatedSize);
-        return new(EnumerateDictoy(disk).OrderBy(x => x.CalculatedSize).First(disk => disk.CalculatedSize > neededSpace).CalculatedSize.ToString());
-
+        var neededSpace = 30_000_000 - (70_000_000 - _rootDisk.CalculatedSize);
+        return new(_allDirectories.OrderBy(x => x.CalculatedSize).First(disk => disk.CalculatedSize > neededSpace).CalculatedSize.ToString());
     }
 }
 
@@ -108,5 +111,7 @@ public enum Type
 
 public record DiskItem(Type Type, IDictionary<string, DiskItem> SubItem, DiskItem Parent, string Name, long? Size = null)
 {
-    public long CalculatedSize => Type == Type.File ? this.Size.Value : SubItem.Values.Sum(x => x.CalculatedSize);
+    private long? _calculcatedSize;
+
+    public long CalculatedSize => (_calculcatedSize ?? (_calculcatedSize = Type == Type.File ? Size.Value : SubItem.Values.Sum(x => x.CalculatedSize))).Value;
 };
