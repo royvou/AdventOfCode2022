@@ -11,8 +11,10 @@ public abstract class Day : BaseDay
         _input = _rawInput.TrimEnd();
     }
 
-    public override string InputFilePath => Path.Combine(InputFileDirPath, $"input.{InputFileExtension.TrimStart('.')}");
+    public override string InputFilePath => IsDebug ? Path.Combine(InputFileDirPath, $"input.example.{InputFileExtension.TrimStart('.')}") : Path.Combine(InputFileDirPath, $"input.{InputFileExtension.TrimStart('.')}");
 
 
     protected override string InputFileDirPath => $"Day{CalculateIndex():D2}";
+
+    protected virtual bool IsDebug => false;
 }
