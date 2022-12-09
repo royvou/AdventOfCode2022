@@ -48,9 +48,6 @@ public class Day08 : Day
     private static bool IsEdgeOfMap(double[][] map, int x, int y)
         => x == 0 || y == 0 || x == (map.Length - 1) || y == (map[0].Length - 1);
 
-    private static bool IsInMap(double[][] map, int x, int y)
-        => x >= 0 && y >= 0 && y <= (map.Length) && x <= (map[0].Length);
-
     private double[][] ParseMap(string input)
         => input.SplitNewLine().Select(x => x.ToCharArray().Select(char.GetNumericValue).ToArray()).ToArray();
 
@@ -76,12 +73,12 @@ public class Day08 : Day
     private int GetScore(double[][] map, int x, int y)
     {
         // array[y][x]
-        return (Enumerable.Range(1, x).TakeWhile(curX => !IsEdgeOfMap(map, x - curX, y) && map[y][x - curX] < map[y][x]).Count() + 1) *
+        return (Enumerable.Range(1, x).TakeWhile(curX => map[y][x - curX] < map[y][x] && !IsEdgeOfMap(map, x - curX, y)).Count() + 1) *
                // Top
-               (Enumerable.Range(1, y).TakeWhile(curY => !IsEdgeOfMap(map, x, y - curY) && map[y - curY][x] < map[y][x]).Count() + 1) *
+               (Enumerable.Range(1, y).TakeWhile(curY => map[y - curY][x] < map[y][x] && !IsEdgeOfMap(map, x, y - curY)).Count() + 1) *
                // Right
-               (Enumerable.Range(1, map.Length - x - 1).TakeWhile(curX => !IsEdgeOfMap(map, x + curX, y) && map[y][x + curX] < map[y][x]).Count() + 1) *
+               (Enumerable.Range(1, map.Length - x - 1).TakeWhile(curX => map[y][x + curX] < map[y][x] && !IsEdgeOfMap(map, x + curX, y)).Count() + 1) *
                // Bottom
-               (Enumerable.Range(1, map.Length - y - 1).TakeWhile(curY => !IsEdgeOfMap(map, x, y + curY) && map[y + curY][x] < map[y][x]).Count() + 1);
+               (Enumerable.Range(1, map.Length - y - 1).TakeWhile(curY => map[y + curY][x] < map[y][x] && !IsEdgeOfMap(map, x, y + curY)).Count() + 1);
     }
 }
