@@ -13,17 +13,18 @@ public class Day09 : Day
         => input.SplitNewLine().Select(Action.Parse).ToArray();
 
     public override ValueTask<string> Solve_1()
-        => new(PlayBoard(new Board(new Point(0, 0), new Point(0, 0)), ParsedInput).seenPositions.Count.ToString());
+        => new(PlayBoard(Board.Init(1), ParsedInput).seenPositions.Count.ToString());
+
 
     private (Board board, HashSet<Point> seenPositions) PlayBoard(Board board, Action[] actions)
     {
         HashSet<Point> seenPositions = new()
         {
-            new (0,0)
+            new Point(0, 0),
         };
         foreach (var action in actions)
         {
-            for (var i = 1; i <= action.Amount; i++)
+            for (var commandAmount = 0; commandAmount < action.Amount; commandAmount++)
             {
                 // Move H
                 board.PosH = action.Direction switch
@@ -35,28 +36,37 @@ public class Day09 : Day
                 };
 
                 // Move T
-                var difference = Difference(board.PosH, board.PosT);
-                
+                for (var index = 0; index < board.Knots.Count; index++)
+                {
+                    // First item should follow head
+                    var previousKnot = index == 0 ? board.PosH : board.Knots[index - 1];
+                    var currentKnot = board.Knots[index];
 
-                if (Math.Abs(difference.Y) <= 1 && Math.Abs(difference.X) <= 1)
-                {
-                    continue;
-                }
-                if (difference.X == 0 && Math.Abs(difference.Y) > 1)
-                {
-                    board.PosT = board.PosT with { Y = board.PosT.Y + Math.Sign(difference.Y), };
-                }
-                else if (difference.Y == 0 && Math.Abs(difference.X) > 1)
-                {
-                    board.PosT = board.PosT with { X = board.PosT.X + Math.Sign(difference.X), };
-                }
-                else
-                {
-                    board.PosT = board.PosT with { X = board.PosT.X + Math.Sign(difference.X), Y = board.PosT.Y + Math.Sign(difference.Y), };
+                    var newCurrentKnot = currentKnot;
+                    var difference = Difference(previousKnot, currentKnot);
+
+                    if (Math.Abs(difference.Y) <= 1 && Math.Abs(difference.X) <= 1)
+                    {
+                        continue;
+                    }
+
+                    if (difference.X == 0 && Math.Abs(difference.Y) > 1)
+                    {
+                        newCurrentKnot = currentKnot with { Y = currentKnot.Y + Math.Sign(difference.Y), };
+                    }
+                    else if (difference.Y == 0 && Math.Abs(difference.X) > 1)
+                    {
+                        newCurrentKnot = currentKnot with { X = currentKnot.X + Math.Sign(difference.X), };
+                    }
+                    else
+                    {
+                        newCurrentKnot = currentKnot with { X = currentKnot.X + Math.Sign(difference.X), Y = currentKnot.Y + Math.Sign(difference.Y), };
+                    }
+
+                    board.Knots[index] = newCurrentKnot;
                 }
 
-
-                seenPositions.Add(board.PosT);
+                seenPositions.Add(board.Knots.Last());
             }
         }
 
@@ -64,7 +74,8 @@ public class Day09 : Day
     }
 
     public override ValueTask<string> Solve_2()
-        => throw new NotImplementedException();
+        => new(PlayBoard(Board.Init(9), ParsedInput).seenPositions.Count.ToString());
+
 
     public static Point Difference(Point PosH, Point PoshT)
         => new(PosH.X - PoshT.X, PosH.Y - PoshT.Y);
@@ -72,20 +83,15 @@ public class Day09 : Day
 
 public class Board
 {
-    public Board(Point PosH, Point PosT)
+    public Board(Point posH, List<Point> knots)
     {
-        this.PosH = PosH;
-        this.PosT = PosT;
+        PosH = posH;
+        Knots = knots;
     }
 
     public Point PosH { get; set; }
-    public Point PosT { get; set; }
-
-    public void Deconstruct(out Point PosH, out Point PosT)
-    {
-        PosH = this.PosH;
-        PosT = this.PosT;
-    }
+    public List<Point> Knots { get; }
+    public static Board Init(int length) => new(new Point(0, 0), Enumerable.Range(0, length).Select(_ => new Point(0, 0)).ToList());
 }
 
 public record struct Point(int X, int Y);
