@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode.Day10;
+﻿using System.Text;
+
+namespace AdventOfCode.Day10;
 
 public class Day10 : Day
 {
@@ -42,7 +44,29 @@ public class Day10 : Day
     }
 
     public override ValueTask<string> Solve_2()
-        => throw new NotImplementedException();
+        => new(CreateMinitor(PlayBoard(ParsedInput).Select((x, i) => (Tick: i, Value: x))));
+    
+    const char darkPixel = ' ';
+    const char litPixel = '█';
+    
+    private string CreateMinitor(IEnumerable<(int Tick, int Value)> tickLoop)
+    {
+        var sb = new StringBuilder();
+        foreach (var tickloop in tickLoop)
+        {
+            var xPosition = tickloop.Tick % 40;
+            
+            if (xPosition == 0)
+            {
+                sb.Append(Environment.NewLine);
+            }
+
+            sb.Append(Math.Abs(tickloop.Value - xPosition) < 2 ? litPixel : darkPixel);
+
+        }
+
+        return sb.ToString();
+    }
 }
 
 public enum ActionType
